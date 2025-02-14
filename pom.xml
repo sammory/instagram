@@ -88,6 +88,15 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- Getter, Setter, 생성자, 빌더 등을 생성 도구 -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.30</version>  <!-- 최신 버전 확인 가능 -->
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
