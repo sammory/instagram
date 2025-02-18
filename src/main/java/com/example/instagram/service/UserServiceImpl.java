@@ -20,15 +20,12 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User registerUser(User user) {
         // 사용자명 중복 체크
-        Optional<User> existingUserByUsername = userRepository.findByUsername(user.getUsername());
-        if (existingUserByUsername.isPresent()) {
-            return null; // 예외 처리는 나중에 적용 예정
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            throw new IllegalArgumentException("이미 존재하는 username입니다.");
         }
-
         // 이메일 중복 체크
-        Optional<User> existingUserByEmail = userRepository.findByEmail(user.getEmail());
-        if (existingUserByEmail.isPresent()) {
-            return null; // 예외 처리는 나중에 적용 예정
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("이미 존재하는 email입니다.");
         }
 
         // 비밀번호 암호화
