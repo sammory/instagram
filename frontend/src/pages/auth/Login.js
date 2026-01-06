@@ -13,7 +13,7 @@ const Login = () => {
   return (
     <div style={styles.container}>
       <h2>로그인</h2>
-      <form onSubmit={handleLogin}>
+      <form>
         <input
           type="text"
           placeholder="아이디"
