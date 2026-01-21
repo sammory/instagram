@@ -25,7 +25,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**")) // 특정 요청에 대해 CSRF 보호 비활성화
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/user/register").permitAll() // 회원가입 API는 인증 없이 허용
+                        .requestMatchers("/api/user/signup").permitAll() // 회원가입 API는 인증 없이 허용
                         .anyRequest().authenticated() // 나머지 모든 요청은 인증 필요
                 )
                 .formLogin(form -> form.disable()); // 기본 로그인 폼 비활성화 (API 방식 사용)
