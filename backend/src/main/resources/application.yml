@@ -1,5 +1,5 @@
 server:
-  port: 9090  # Server port setting
+  port: 9090
 
 spring:
   application:
@@ -9,25 +9,28 @@ spring:
     url: jdbc:mysql://localhost:3306/insta?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true
     username: root
     password: 1234
-    driver-class-name: com.mysql.cj.jdbc.Driver  # MySQL 8.x driver class
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update  # Automatically create/update tables
-    show-sql: true  # Show SQL queries in console
-    open-in-view: false # Disable open-in-view for JPA
+      ddl-auto: update
+    show-sql: true
+    open-in-view: false
 
-jwt:
-  secret: mySuperSecretKey123
-  expiration: 86400000
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
   servlet:
     multipart:
       enabled: true
-      max-file-size: 2MB  # Max upload file size
+      max-file-size: 2MB
 
-  mustache:
-    expose-session-attributes: true  # Allow session attributes in Mustache
+jwt:
+  secret: mySuperSecretKeyForInstagramProject2024LongEnough
+  access-expiration: 3600000      # 1시간
+  refresh-expiration: 604800000   # 7일
 
 file:
-  path: D:/Springboot-Instagram/upload/  # Upload file path
+  path: D:/Springboot-Instagram/upload/

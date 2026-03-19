@@ -62,6 +62,19 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 로그인 실패 예외 처리
+     */
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidCredentials(
+            InvalidCredentialsException ex) {
+
+        Map<String, String> error = new HashMap<>();
+        error.put("error", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
+
+    /**
      * 일반 예외 처리
      * - 예상하지 못한 예외 발생 시 처리
      */

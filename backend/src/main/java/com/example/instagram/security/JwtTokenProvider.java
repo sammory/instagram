@@ -1,58 +1,63 @@
 package com.example.instagram.security;
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
 
-    @Value("${jwt.secret}")
-    private String jwtSecret;
+    private final SecretKey secretKey;
+    private final long accessTokenExpiration;
+    private final long refreshTokenExpiration;
 
-    @Value("${jwt.expiration}")
-    private long jwtExpirationInMs;
+    public JwtTokenProvider(
+            @Value("${jwt.secret}") String secret,
+            @Value("${jwt.access-expiration}") long accessTokenExpiration,
+            @Value("${jwt.refresh-expiration}") long refreshTokenExpiration) {
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        this.accessTokenExpiration = accessTokenExpiration;
+        this.refreshTokenExpiration = refreshTokenExpiration;
+    }
 
-    // JWT 토큰 생성
-    public String generateToken(String username) {
+    public String generateAccessToken(String email) {
+        return generateToken(email, accessTokenExpiration);
+    }
+
+    public String generateRefreshToken(String email) {
+        return generateToken(email, refreshTokenExpiration);
+    }
+
+    private String generateToken(String email, long expiration) {
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
-
         return Jwts.builder()
-                .setSubject(username)              // 토큰에 username 저장
-                .setIssuedAt(now)                 // 발급 시간
-                .setExpiration(expiryDate)        // 만료 시간
-                .signWith(SignatureAlgorithm.HS512, jwtSecret) // 서명
+                .setSubject(email)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + expiration))
+                .signWith(secretKey)
                 .compact();
     }
 
-    // 토큰에서 username 추출
-    public String getUsernameFromToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(jwtSecret)
+    public String getEmailFromToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
     }
 
-    // 토큰 유효성 검증
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
             return true;
-        } catch (ExpiredJwtException e) {
-            System.out.println("JWT 만료됨: " + e.getMessage());
-        } catch (UnsupportedJwtException e) {
-            System.out.println("지원하지 않는 JWT: " + e.getMessage());
-        } catch (MalformedJwtException e) {
-            System.out.println("잘못된 형식의 JWT: " + e.getMessage());
-        } catch (SignatureException e) {
-            System.out.println("JWT 서명 오류: " + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            System.out.println("JWT claims 비어있음: " + e.getMessage());
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
         }
-        return false;
     }
 }
